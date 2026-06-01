@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -18,7 +19,8 @@ namespace WpfDimensionSample.ViewModels
             Patterns = new ObservableCollection<ShapePattern>
             {
                 CreateRectanglePattern(),
-                CreateSteppedPattern()
+                CreateSteppedPattern(),
+                CreateTrapezoidPattern()
             };
 
             SelectedPattern = Patterns[0];
@@ -132,6 +134,54 @@ namespace WpfDimensionSample.ViewModels
                                 new Point(width, height),
                                 new Vector(1, 0),
                                 string.Format("高さ2 H2 = {0:g} mm", height2))
+                        });
+                });
+        }
+
+        private static ShapePattern CreateTrapezoidPattern()
+        {
+            return new ShapePattern(
+                "台形",
+                new List<DimensionParameter>
+                {
+                    new DimensionParameter("TopWidth", "上底", 100),
+                    new DimensionParameter("BottomWidth", "下底", 180),
+                    new DimensionParameter("Height", "高さ", 110)
+                },
+                values =>
+                {
+                    var topWidth = values["TopWidth"];
+                    var bottomWidth = values["BottomWidth"];
+                    var height = values["Height"];
+                    var left = Math.Min(0, (bottomWidth - topWidth) / 2);
+                    var topLeft = (bottomWidth - topWidth) / 2;
+                    var topRight = topLeft + topWidth;
+
+                    return new DrawingModel(
+                        new List<Point>
+                        {
+                            new Point(topLeft, 0),
+                            new Point(topRight, 0),
+                            new Point(bottomWidth, height),
+                            new Point(0, height)
+                        },
+                        new List<DimensionAnnotation>
+                        {
+                            new DimensionAnnotation(
+                                new Point(topLeft, 0),
+                                new Point(topRight, 0),
+                                new Vector(0, -1),
+                                string.Format("上底 W1 = {0:g} mm", topWidth)),
+                            new DimensionAnnotation(
+                                new Point(0, height),
+                                new Point(bottomWidth, height),
+                                new Vector(0, 1),
+                                string.Format("下底 W2 = {0:g} mm", bottomWidth)),
+                            new DimensionAnnotation(
+                                new Point(left, 0),
+                                new Point(left, height),
+                                new Vector(-1, 0),
+                                string.Format("高さ H = {0:g} mm", height))
                         });
                 });
         }
