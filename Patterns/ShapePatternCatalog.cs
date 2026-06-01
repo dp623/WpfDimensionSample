@@ -96,9 +96,9 @@ namespace WpfDimensionSample.Patterns
                                 new Vector(0, 1),
                                 string.Format("幅 W = {0:g} mm", width)),
                             new DimensionAnnotation(
-                                new Point(0, 0),
-                                new Point(0, height),
-                                new Vector(-1, 0),
+                                new Point(width, 0),
+                                new Point(width, height),
+                                new Vector(1, 0),
                                 string.Format("高さ H = {0:g} mm", height)),
                             new DimensionAnnotation(
                                 new Point(width, height - height2),

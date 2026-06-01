@@ -130,10 +130,6 @@ namespace WpfDimensionSample.Patterns
                 return Key + "." + suffix;
             }
 
-            protected static Vector HeightOffset(int index)
-            {
-                return index % 2 == 0 ? new Vector(-1, 0) : new Vector(1, 0);
-            }
         }
 
         private sealed class RectanglePartDefinition : PartDefinition
@@ -188,7 +184,7 @@ namespace WpfDimensionSample.Patterns
             {
                 var width = GetWidth(values);
                 var height = GetHeight(values);
-                var heightX = index % 2 == 0 ? left : left + width;
+                var heightX = left + width;
 
                 dimensions.Add(new DimensionAnnotation(
                     new Point(left, bottom),
@@ -198,7 +194,7 @@ namespace WpfDimensionSample.Patterns
                 dimensions.Add(new DimensionAnnotation(
                     new Point(heightX, top),
                     new Point(heightX, bottom),
-                    HeightOffset(index),
+                    new Vector(1, 0),
                     string.Format("{0} 高さ = {1:g} mm", Label, height)));
             }
         }
@@ -276,7 +272,7 @@ namespace WpfDimensionSample.Patterns
                 var height = GetHeight(values);
                 var topLeft = left + (width - topWidth) / 2;
                 var bottomLeft = left + (width - bottomWidth) / 2;
-                var heightX = index % 2 == 0 ? left : left + width;
+                var heightX = left + width;
 
                 dimensions.Add(new DimensionAnnotation(
                     new Point(topLeft, top),
@@ -291,7 +287,7 @@ namespace WpfDimensionSample.Patterns
                 dimensions.Add(new DimensionAnnotation(
                     new Point(heightX, top),
                     new Point(heightX, bottom),
-                    HeightOffset(index),
+                    new Vector(1, 0),
                     string.Format("{0} 高さ = {1:g} mm", Label, height)));
             }
         }
