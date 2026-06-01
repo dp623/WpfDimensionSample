@@ -20,15 +20,31 @@ Visual Studioで `WpfDimensionSample.csproj` を開いて実行します。
 msbuild .\WpfDimensionSample.csproj /t:Build /p:Configuration=Debug
 ```
 
-## 含まれる機能
+## 構成
 
-- コンボボックスによる図形パターン切り替え
-- パターンに応じた入力欄の動的生成
-- 入力値に連動する図形、寸法線、矢印、ラベルの描画
-- 数値以外、0以下の入力に対する検証エラー表示
-- 実寸値と画面上の描画倍率の分離
+- `ViewModels/MainViewModel.cs`
+  - 選択されたパターンの管理と再描画のみを担当します。
+- `Patterns/ShapePatternCatalog.cs`
+  - コンボボックスへ表示するパターン一覧を定義します。
+- `Patterns/VerticalCompositePatternBuilder.cs`
+  - 四角形や台形を縦並びにする複合パターンを生成します。
+- `Controls/DimensionDrawingView.cs`
+  - 図形、寸法線、矢印、ラベルを描画します。
 
-## パターン追加
+## 複合パターン追加
 
-`ViewModels/MainViewModel.cs` に `ShapePattern` を追加します。
-入力項目は `DimensionParameter`、描画内容は `BuildDrawing` で定義します。
+縦並びの複合パターンは、`ShapePatternCatalog.cs`へ次のように追加できます。
+
+```csharp
+return new VerticalCompositePatternBuilder("四角形 x4 + 台形 x2", 25)
+    .AddRectangle("R1", "四角形1", 80, 70)
+    .AddRectangle("R2", "四角形2", 90, 85)
+    .AddRectangle("R3", "四角形3", 100, 95)
+    .AddRectangle("R4", "四角形4", 110, 105)
+    .AddTrapezoid("T1", "台形1", 70, 120, 100)
+    .AddTrapezoid("T2", "台形2", 85, 135, 115)
+    .Build();
+```
+
+`VerticalCompositePatternBuilder`は入力項目、点列、寸法線を自動生成します。
+段付き形状のような特殊な輪郭は、`ShapePatternCatalog.cs`で個別に定義します。

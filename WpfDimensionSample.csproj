@@ -63,6 +63,9 @@
     <Compile Include="Models\DimensionParameter.cs" />
     <Compile Include="Models\DrawingModel.cs" />
     <Compile Include="Models\ShapePattern.cs" />
+    <Compile Include="Patterns\VerticalCompositePatternBuilder.cs" />
+    <Compile Include="Patterns\ShapePatternCatalog.cs" />
+    <Compile Include="Patterns\ShapePoints.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
   </ItemGroup>
