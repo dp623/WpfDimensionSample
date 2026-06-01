@@ -48,3 +48,30 @@ return new VerticalCompositePatternBuilder("四角形 x4 + 台形 x2", 25)
 
 `VerticalCompositePatternBuilder`は入力項目、点列、寸法線を自動生成します。
 段付き形状のような特殊な輪郭は、`ShapePatternCatalog.cs`で個別に定義します。
+
+## 入力項目・寸法線・ラベルの表示制御
+
+`DimensionDisplay`で、入力項目、寸法線、ラベルを個別に表示または非表示にできます。
+
+四角形の幅を固定値として非表示にし、高さだけを変更可能にする例:
+
+```csharp
+return new VerticalCompositePatternBuilder("四角形（高さのみ変更）", 0)
+    .AddRectangle(
+        "R1",
+        "四角形",
+        160,
+        100,
+        DimensionDisplay.Hidden(),
+        DimensionDisplay.Visible())
+    .Build();
+```
+
+個別指定も可能です。
+
+```csharp
+new DimensionDisplay(
+    isInputVisible: false,
+    isLineVisible: true,
+    isLabelVisible: false)
+```

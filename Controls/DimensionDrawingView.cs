@@ -93,12 +93,19 @@ namespace WpfDimensionSample.Controls
             var dimensionFrom = from + offset;
             var dimensionTo = to + offset;
 
+        if (annotation.IsLineVisible)
+        {
             drawingContext.DrawLine(DimensionPen, from, dimensionFrom + extension);
             drawingContext.DrawLine(DimensionPen, to, dimensionTo + extension);
             drawingContext.DrawLine(DimensionPen, dimensionFrom, dimensionTo);
             DrawArrow(drawingContext, dimensionFrom, dimensionTo);
             DrawArrow(drawingContext, dimensionTo, dimensionFrom);
+        }
+
+        if (annotation.IsLabelVisible)
+        {
             DrawLabel(drawingContext, dimensionFrom, dimensionTo, annotation.Label);
+        }
         }
 
         private static void DrawArrow(DrawingContext drawingContext, Point tip, Point opposite)

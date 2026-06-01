@@ -11,6 +11,7 @@ namespace WpfDimensionSample.Patterns
         private readonly string _name;
         private readonly double _initialGap;
         private readonly List<PartDefinition> _parts = new List<PartDefinition>();
+        private DimensionDisplay _gapDisplay = DimensionDisplay.Visible();
 
         public VerticalCompositePatternBuilder(string name, double initialGap)
         {
@@ -24,7 +25,30 @@ namespace WpfDimensionSample.Patterns
             double initialWidth,
             double initialHeight)
         {
-            _parts.Add(new RectanglePartDefinition(key, label, initialWidth, initialHeight));
+            return AddRectangle(
+                key,
+                label,
+                initialWidth,
+                initialHeight,
+                DimensionDisplay.Visible(),
+                DimensionDisplay.Visible());
+        }
+
+        public VerticalCompositePatternBuilder AddRectangle(
+            string key,
+            string label,
+            double initialWidth,
+            double initialHeight,
+            DimensionDisplay widthDisplay,
+            DimensionDisplay heightDisplay)
+        {
+            _parts.Add(new RectanglePartDefinition(
+                key,
+                label,
+                initialWidth,
+                initialHeight,
+                widthDisplay,
+                heightDisplay));
             return this;
         }
 
@@ -35,12 +59,42 @@ namespace WpfDimensionSample.Patterns
             double initialBottomWidth,
             double initialHeight)
         {
+            return AddTrapezoid(
+                key,
+                label,
+                initialTopWidth,
+                initialBottomWidth,
+                initialHeight,
+                DimensionDisplay.Visible(),
+                DimensionDisplay.Visible(),
+                DimensionDisplay.Visible());
+        }
+
+        public VerticalCompositePatternBuilder AddTrapezoid(
+            string key,
+            string label,
+            double initialTopWidth,
+            double initialBottomWidth,
+            double initialHeight,
+            DimensionDisplay topWidthDisplay,
+            DimensionDisplay bottomWidthDisplay,
+            DimensionDisplay heightDisplay)
+        {
             _parts.Add(new TrapezoidPartDefinition(
                 key,
                 label,
                 initialTopWidth,
                 initialBottomWidth,
-                initialHeight));
+                initialHeight,
+                topWidthDisplay,
+                bottomWidthDisplay,
+                heightDisplay));
+            return this;
+        }
+
+        public VerticalCompositePatternBuilder SetGapDisplay(DimensionDisplay display)
+        {
+            _gapDisplay = display;
             return this;
         }
 
@@ -59,7 +113,12 @@ namespace WpfDimensionSample.Patterns
 
             if (_parts.Count > 1)
             {
-                parameters.Add(new DimensionParameter("Gap", "間隔", _initialGap));
+                parameters.Add(new DimensionParameter(
+                    "Gap",
+                    "間隔",
+                    _initialGap,
+                    "mm",
+                    _gapDisplay.IsInputVisible));
             }
 
             return new ShapePattern(_name, parameters, BuildDrawing);
@@ -86,17 +145,41 @@ namespace WpfDimensionSample.Patterns
                 var bottom = top + height;
                 if (index < _parts.Count - 1)
                 {
-                    dimensions.Add(new DimensionAnnotation(
+                    AddAnnotation(
+                        dimensions,
                         new Point(totalWidth, bottom),
                         new Point(totalWidth, bottom + gap),
                         new Vector(1, 0),
-                        string.Format("間隔 G = {0:g} mm", gap)));
+                        string.Format("間隔 G = {0:g} mm", gap),
+                        _gapDisplay);
                 }
 
                 top = bottom + gap;
             }
 
             return new DrawingModel(shapes, dimensions);
+        }
+
+        private static void AddAnnotation(
+            ICollection<DimensionAnnotation> dimensions,
+            Point from,
+            Point to,
+            Vector offsetDirection,
+            string label,
+            DimensionDisplay display)
+        {
+            if (!display.IsLineVisible && !display.IsLabelVisible)
+            {
+                return;
+            }
+
+            dimensions.Add(new DimensionAnnotation(
+                from,
+                to,
+                offsetDirection,
+                label,
+                display.IsLineVisible,
+                display.IsLabelVisible));
         }
 
         private abstract class PartDefinition
@@ -136,22 +219,38 @@ namespace WpfDimensionSample.Patterns
         {
             private readonly double _initialWidth;
             private readonly double _initialHeight;
+            private readonly DimensionDisplay _widthDisplay;
+            private readonly DimensionDisplay _heightDisplay;
 
             public RectanglePartDefinition(
                 string key,
                 string label,
                 double initialWidth,
-                double initialHeight)
+                double initialHeight,
+                DimensionDisplay widthDisplay,
+                DimensionDisplay heightDisplay)
                 : base(key, label)
             {
                 _initialWidth = initialWidth;
                 _initialHeight = initialHeight;
+                _widthDisplay = widthDisplay;
+                _heightDisplay = heightDisplay;
             }
 
             public override void AddParameters(ICollection<DimensionParameter> parameters)
             {
-                parameters.Add(new DimensionParameter(ParameterKey("Width"), Label + " 幅", _initialWidth));
-                parameters.Add(new DimensionParameter(ParameterKey("Height"), Label + " 高さ", _initialHeight));
+                parameters.Add(new DimensionParameter(
+                    ParameterKey("Width"),
+                    Label + " 幅",
+                    _initialWidth,
+                    "mm",
+                    _widthDisplay.IsInputVisible));
+                parameters.Add(new DimensionParameter(
+                    ParameterKey("Height"),
+                    Label + " 高さ",
+                    _initialHeight,
+                    "mm",
+                    _heightDisplay.IsInputVisible));
             }
 
             public override double GetWidth(IReadOnlyDictionary<string, double> values)
@@ -186,16 +285,20 @@ namespace WpfDimensionSample.Patterns
                 var height = GetHeight(values);
                 var heightX = left + width;
 
-                dimensions.Add(new DimensionAnnotation(
+                AddAnnotation(
+                    dimensions,
                     new Point(left, bottom),
                     new Point(left + width, bottom),
                     new Vector(0, 1),
-                    string.Format("{0} 幅 = {1:g} mm", Label, width)));
-                dimensions.Add(new DimensionAnnotation(
+                    string.Format("{0} 幅 = {1:g} mm", Label, width),
+                    _widthDisplay);
+                AddAnnotation(
+                    dimensions,
                     new Point(heightX, top),
                     new Point(heightX, bottom),
                     new Vector(1, 0),
-                    string.Format("{0} 高さ = {1:g} mm", Label, height)));
+                    string.Format("{0} 高さ = {1:g} mm", Label, height),
+                    _heightDisplay);
             }
         }
 
@@ -204,25 +307,49 @@ namespace WpfDimensionSample.Patterns
             private readonly double _initialTopWidth;
             private readonly double _initialBottomWidth;
             private readonly double _initialHeight;
+            private readonly DimensionDisplay _topWidthDisplay;
+            private readonly DimensionDisplay _bottomWidthDisplay;
+            private readonly DimensionDisplay _heightDisplay;
 
             public TrapezoidPartDefinition(
                 string key,
                 string label,
                 double initialTopWidth,
                 double initialBottomWidth,
-                double initialHeight)
+                double initialHeight,
+                DimensionDisplay topWidthDisplay,
+                DimensionDisplay bottomWidthDisplay,
+                DimensionDisplay heightDisplay)
                 : base(key, label)
             {
                 _initialTopWidth = initialTopWidth;
                 _initialBottomWidth = initialBottomWidth;
                 _initialHeight = initialHeight;
+                _topWidthDisplay = topWidthDisplay;
+                _bottomWidthDisplay = bottomWidthDisplay;
+                _heightDisplay = heightDisplay;
             }
 
             public override void AddParameters(ICollection<DimensionParameter> parameters)
             {
-                parameters.Add(new DimensionParameter(ParameterKey("TopWidth"), Label + " 上底", _initialTopWidth));
-                parameters.Add(new DimensionParameter(ParameterKey("BottomWidth"), Label + " 下底", _initialBottomWidth));
-                parameters.Add(new DimensionParameter(ParameterKey("Height"), Label + " 高さ", _initialHeight));
+                parameters.Add(new DimensionParameter(
+                    ParameterKey("TopWidth"),
+                    Label + " 上底",
+                    _initialTopWidth,
+                    "mm",
+                    _topWidthDisplay.IsInputVisible));
+                parameters.Add(new DimensionParameter(
+                    ParameterKey("BottomWidth"),
+                    Label + " 下底",
+                    _initialBottomWidth,
+                    "mm",
+                    _bottomWidthDisplay.IsInputVisible));
+                parameters.Add(new DimensionParameter(
+                    ParameterKey("Height"),
+                    Label + " 高さ",
+                    _initialHeight,
+                    "mm",
+                    _heightDisplay.IsInputVisible));
             }
 
             public override double GetWidth(IReadOnlyDictionary<string, double> values)
@@ -274,21 +401,27 @@ namespace WpfDimensionSample.Patterns
                 var bottomLeft = left + (width - bottomWidth) / 2;
                 var heightX = left + width;
 
-                dimensions.Add(new DimensionAnnotation(
+                AddAnnotation(
+                    dimensions,
                     new Point(topLeft, top),
                     new Point(topLeft + topWidth, top),
                     new Vector(0, -1),
-                    string.Format("{0} 上底 = {1:g} mm", Label, topWidth)));
-                dimensions.Add(new DimensionAnnotation(
+                    string.Format("{0} 上底 = {1:g} mm", Label, topWidth),
+                    _topWidthDisplay);
+                AddAnnotation(
+                    dimensions,
                     new Point(bottomLeft, bottom),
                     new Point(bottomLeft + bottomWidth, bottom),
                     new Vector(0, 1),
-                    string.Format("{0} 下底 = {1:g} mm", Label, bottomWidth)));
-                dimensions.Add(new DimensionAnnotation(
+                    string.Format("{0} 下底 = {1:g} mm", Label, bottomWidth),
+                    _bottomWidthDisplay);
+                AddAnnotation(
+                    dimensions,
                     new Point(heightX, top),
                     new Point(heightX, bottom),
                     new Vector(1, 0),
-                    string.Format("{0} 高さ = {1:g} mm", Label, height)));
+                    string.Format("{0} 高さ = {1:g} mm", Label, height),
+                    _heightDisplay);
             }
         }
     }

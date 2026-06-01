@@ -61,6 +61,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\DimensionParameter.cs" />
+    <Compile Include="Models\DimensionDisplay.cs" />
     <Compile Include="Models\DrawingModel.cs" />
     <Compile Include="Models\ShapePattern.cs" />
     <Compile Include="Patterns\VerticalCompositePatternBuilder.cs" />

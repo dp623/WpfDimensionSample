@@ -13,6 +13,7 @@ namespace WpfDimensionSample.Patterns
                 CreateRectanglePattern(),
                 CreateSteppedPattern(),
                 CreateTrapezoidPattern(),
+                CreateHeightOnlyRectanglePattern(),
                 CreateDoubleRectanglePattern(),
                 CreateTrapezoidAndRectanglePattern(),
                 CreateFourRectanglesAndTwoTrapezoidsPattern()
@@ -38,6 +39,19 @@ namespace WpfDimensionSample.Patterns
             return new VerticalCompositePatternBuilder("四角形 x2", 35)
                 .AddRectangle("R1", "四角形1", 100, 90)
                 .AddRectangle("R2", "四角形2", 130, 120)
+                .Build();
+        }
+
+        private static ShapePattern CreateHeightOnlyRectanglePattern()
+        {
+            return new VerticalCompositePatternBuilder("四角形（高さのみ変更）", 0)
+                .AddRectangle(
+                    "R1",
+                    "四角形",
+                    160,
+                    100,
+                    DimensionDisplay.Hidden(),
+                    DimensionDisplay.Visible())
                 .Build();
         }
 

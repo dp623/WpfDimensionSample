@@ -13,11 +13,17 @@ namespace WpfDimensionSample.Models
         private string _valueText;
         private double _numericValue;
 
-        public DimensionParameter(string key, string label, double initialValue, string unit = "mm")
+        public DimensionParameter(
+            string key,
+            string label,
+            double initialValue,
+            string unit = "mm",
+            bool isVisible = true)
         {
             Key = key;
             Label = label;
             Unit = unit;
+            IsVisible = isVisible;
             _numericValue = initialValue;
             _valueText = initialValue.ToString(CultureInfo.CurrentCulture);
         }
@@ -27,6 +33,8 @@ namespace WpfDimensionSample.Models
         public string Label { get; private set; }
 
         public string Unit { get; private set; }
+
+        public bool IsVisible { get; private set; }
 
         public double NumericValue
         {
