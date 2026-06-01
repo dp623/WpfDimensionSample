@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 
 namespace WpfDimensionSample.Models
@@ -24,12 +25,21 @@ namespace WpfDimensionSample.Models
         public DrawingModel(
             IReadOnlyList<Point> shapePoints,
             IReadOnlyList<DimensionAnnotation> dimensions)
+            : this(
+                new List<IReadOnlyList<Point>> { shapePoints },
+                dimensions)
         {
-            ShapePoints = shapePoints;
+        }
+
+        public DrawingModel(
+            IReadOnlyList<IReadOnlyList<Point>> shapes,
+            IReadOnlyList<DimensionAnnotation> dimensions)
+        {
+            Shapes = shapes;
             Dimensions = dimensions;
         }
 
-        public IReadOnlyList<Point> ShapePoints { get; private set; }
+        public IReadOnlyList<IReadOnlyList<Point>> Shapes { get; private set; }
         public IReadOnlyList<DimensionAnnotation> Dimensions { get; private set; }
     }
 }

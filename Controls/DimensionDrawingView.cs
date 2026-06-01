@@ -37,12 +37,12 @@ namespace WpfDimensionSample.Controls
             base.OnRender(drawingContext);
             drawingContext.DrawRectangle(Brushes.White, null, new Rect(RenderSize));
 
-            if (Drawing == null || Drawing.ShapePoints.Count < 3)
+            if (Drawing == null || Drawing.Shapes.Count == 0)
             {
                 return;
             }
 
-            var bounds = GetBounds(Drawing.ShapePoints);
+            var bounds = GetBounds(Drawing.Shapes.SelectMany(x => x).ToArray());
             var scale = Math.Min(
                 Math.Max(1, ActualWidth - OuterMargin * 2) / Math.Max(1, bounds.Width),
                 Math.Max(1, ActualHeight - OuterMargin * 2) / Math.Max(1, bounds.Height));
@@ -51,7 +51,13 @@ namespace WpfDimensionSample.Controls
                 OuterMargin + (point.X - bounds.Left) * scale,
                 OuterMargin + (point.Y - bounds.Top) * scale);
 
-            DrawShape(drawingContext, Drawing.ShapePoints.Select(map).ToArray());
+            foreach (var shape in Drawing.Shapes)
+            {
+                if (shape.Count >= 3)
+                {
+                    DrawShape(drawingContext, shape.Select(map).ToArray());
+                }
+            }
 
             foreach (var dimension in Drawing.Dimensions)
             {
