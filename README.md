@@ -49,6 +49,21 @@ return new VerticalCompositePatternBuilder("四角形 x4 + 台形 x2", 25)
 `VerticalCompositePatternBuilder`は入力項目、点列、寸法線を自動生成します。
 段付き形状のような特殊な輪郭は、`ShapePatternCatalog.cs`で個別に定義します。
 
+## 真円付き四角形
+
+`四角形 + 真円`パターンを追加しています。
+
+入力項目:
+
+- 四角形 幅
+- 四角形 高さ
+- 真円 半径
+- 真円 中心X
+- 真円 中心Y
+
+真円は中心座標と半径で描画します。
+中心X、中心Yは四角形の左上を原点とした位置です。
+
 ## 入力項目・寸法線・ラベルの表示制御
 
 `DimensionDisplay`で、入力項目、寸法線、ラベルを個別に表示または非表示にできます。

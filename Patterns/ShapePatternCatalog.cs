@@ -13,6 +13,7 @@ namespace WpfDimensionSample.Patterns
                 CreateRectanglePattern(),
                 CreateSteppedPattern(),
                 CreateTrapezoidPattern(),
+                CreateRectangleWithCirclePattern(),
                 CreateHeightOnlyRectanglePattern(),
                 CreateDoubleRectanglePattern(),
                 CreateTrapezoidAndRectanglePattern(),
@@ -32,6 +33,67 @@ namespace WpfDimensionSample.Patterns
             return new VerticalCompositePatternBuilder("台形", 0)
                 .AddTrapezoid("T1", "台形", 100, 180, 110)
                 .Build();
+        }
+
+        private static ShapePattern CreateRectangleWithCirclePattern()
+        {
+            return new ShapePattern(
+                "四角形 + 真円",
+                new List<DimensionParameter>
+                {
+                    new DimensionParameter("RectangleWidth", "四角形 幅", 180),
+                    new DimensionParameter("RectangleHeight", "四角形 高さ", 130),
+                    new DimensionParameter("CircleRadius", "真円 半径", 30),
+                    new DimensionParameter("CircleCenterX", "真円 中心X", 90),
+                    new DimensionParameter("CircleCenterY", "真円 中心Y", 65)
+                },
+                values =>
+                {
+                    var rectangleWidth = values["RectangleWidth"];
+                    var rectangleHeight = values["RectangleHeight"];
+                    var radius = values["CircleRadius"];
+                    var centerX = values["CircleCenterX"];
+                    var centerY = values["CircleCenterY"];
+                    var center = new Point(centerX, centerY);
+
+                    return new DrawingModel(
+                        new List<IReadOnlyList<Point>>
+                        {
+                            ShapePoints.CreateRectangle(0, 0, rectangleWidth, rectangleHeight)
+                        },
+                        new List<CircleShape>
+                        {
+                            new CircleShape(center, radius)
+                        },
+                        new List<DimensionAnnotation>
+                        {
+                            new DimensionAnnotation(
+                                new Point(0, rectangleHeight),
+                                new Point(rectangleWidth, rectangleHeight),
+                                new Vector(0, 1),
+                                string.Format("四角形 幅 = {0:g} mm", rectangleWidth)),
+                            new DimensionAnnotation(
+                                new Point(rectangleWidth, 0),
+                                new Point(rectangleWidth, rectangleHeight),
+                                new Vector(1, 0),
+                                string.Format("四角形 高さ = {0:g} mm", rectangleHeight)),
+                            new DimensionAnnotation(
+                                new Point(centerX, centerY),
+                                new Point(centerX + radius, centerY),
+                                new Vector(0, 1),
+                                string.Format("真円 半径 R = {0:g} mm", radius)),
+                            new DimensionAnnotation(
+                                new Point(0, centerY),
+                                new Point(centerX, centerY),
+                                new Vector(0, -1),
+                                string.Format("中心X = {0:g} mm", centerX)),
+                            new DimensionAnnotation(
+                                new Point(rectangleWidth, 0),
+                                new Point(rectangleWidth, centerY),
+                                new Vector(1, 0),
+                                string.Format("中心Y = {0:g} mm", centerY))
+                        });
+                });
         }
 
         private static ShapePattern CreateDoubleRectanglePattern()

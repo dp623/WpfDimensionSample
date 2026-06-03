@@ -37,12 +37,14 @@ namespace WpfDimensionSample.Controls
             base.OnRender(drawingContext);
             drawingContext.DrawRectangle(Brushes.White, null, new Rect(RenderSize));
 
-            if (Drawing == null || Drawing.Shapes.Count == 0)
+            if (Drawing == null || (Drawing.Shapes.Count == 0 && Drawing.Circles.Count == 0))
             {
                 return;
             }
 
-            var bounds = GetBounds(Drawing.Shapes.SelectMany(x => x).ToArray());
+            var bounds = GetBounds(
+                Drawing.Shapes.SelectMany(x => x),
+                Drawing.Circles);
             var scale = Math.Min(
                 Math.Max(1, ActualWidth - OuterMargin * 2) / Math.Max(1, bounds.Width),
                 Math.Max(1, ActualHeight - OuterMargin * 2) / Math.Max(1, bounds.Height));
@@ -59,10 +61,23 @@ namespace WpfDimensionSample.Controls
                 }
             }
 
+            foreach (var circle in Drawing.Circles)
+            {
+                DrawCircle(drawingContext, map(circle.Center), circle.Radius * scale);
+            }
+
             foreach (var dimension in Drawing.Dimensions)
             {
                 DrawDimension(drawingContext, map(dimension.From), map(dimension.To), dimension);
             }
+        }
+
+        private static void DrawCircle(
+            DrawingContext drawingContext,
+            Point center,
+            double radius)
+        {
+            drawingContext.DrawEllipse(null, ShapePen, center, radius, radius);
         }
 
         private static void DrawShape(
@@ -148,8 +163,17 @@ namespace WpfDimensionSample.Controls
             drawingContext.DrawText(text, origin);
         }
 
-        private static Rect GetBounds(IReadOnlyList<Point> points)
+        private static Rect GetBounds(
+            IEnumerable<Point> shapePoints,
+            IReadOnlyList<CircleShape> circles)
         {
+            var points = shapePoints.ToList();
+            foreach (var circle in circles)
+            {
+                points.Add(new Point(circle.Center.X - circle.Radius, circle.Center.Y - circle.Radius));
+                points.Add(new Point(circle.Center.X + circle.Radius, circle.Center.Y + circle.Radius));
+            }
+
             var minX = points.Min(x => x.X);
             var maxX = points.Max(x => x.X);
             var minY = points.Min(x => x.Y);

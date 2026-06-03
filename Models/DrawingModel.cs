@@ -37,6 +37,7 @@ namespace WpfDimensionSample.Models
             IReadOnlyList<DimensionAnnotation> dimensions)
             : this(
                 new List<IReadOnlyList<Point>> { shapePoints },
+                new List<CircleShape>(),
                 dimensions)
         {
         }
@@ -44,12 +45,34 @@ namespace WpfDimensionSample.Models
         public DrawingModel(
             IReadOnlyList<IReadOnlyList<Point>> shapes,
             IReadOnlyList<DimensionAnnotation> dimensions)
+            : this(shapes, new List<CircleShape>(), dimensions)
+        {
+        }
+
+        public DrawingModel(
+            IReadOnlyList<IReadOnlyList<Point>> shapes,
+            IReadOnlyList<CircleShape> circles,
+            IReadOnlyList<DimensionAnnotation> dimensions)
         {
             Shapes = shapes;
+            Circles = circles;
             Dimensions = dimensions;
         }
 
         public IReadOnlyList<IReadOnlyList<Point>> Shapes { get; private set; }
+        public IReadOnlyList<CircleShape> Circles { get; private set; }
         public IReadOnlyList<DimensionAnnotation> Dimensions { get; private set; }
+    }
+
+    public sealed class CircleShape
+    {
+        public CircleShape(Point center, double radius)
+        {
+            Center = center;
+            Radius = radius;
+        }
+
+        public Point Center { get; private set; }
+        public double Radius { get; private set; }
     }
 }
