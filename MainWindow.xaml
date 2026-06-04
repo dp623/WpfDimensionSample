@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:WpfDimensionSample.Controls"
         Title="寸法連携サンプル"
-        Width="1000"
+        Width="1200"
         Height="600"
         MinWidth="700"
         MinHeight="500">
@@ -12,7 +12,7 @@
     </Window.Resources>
     <Grid Margin="20">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="20" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
@@ -42,11 +42,18 @@
                                   Visibility="{Binding IsVisible,
                                                        Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="86" />
+                                    <ColumnDefinition Width="100" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock VerticalAlignment="Center" Text="{Binding Label}" />
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding Label}" />
+                                    <CheckBox VerticalAlignment="Center"
+                                              Margin="4,0,0,0"
+                                              IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                              Visibility="{Binding IsCheckBoxVisible,
+                                                                   Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                </StackPanel>
                                 <ItemsControl Grid.Column="1" ItemsSource="{Binding Slots}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
@@ -64,6 +71,8 @@
                                                 <TextBox Width="54"
                                                          Margin="0,0,4,0"
                                                          Padding="5,3"
+                                                         IsEnabled="{Binding DataContext.IsSlotsEnabled,
+                                                                             RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                          Text="{Binding Parameter.ValueText,
                                                                         UpdateSourceTrigger=PropertyChanged,
                                                                         ValidatesOnNotifyDataErrors=True}" />

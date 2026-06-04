@@ -69,10 +69,26 @@ return new VerticalCompositePatternBuilder("四角形 x4 + 台形 x2", 25)
 ```text
 四角形      [   ] W x [   ] H
 真円　半径  [   ]
-真円　位置  X[   ] x Y[   ]
+真円　位置  [✓] X[   ] x Y[   ]
 ```
 
 パターンごとの入力レイアウトは `InputRow` と `InputSlot` で定義できます。
+
+`InputRow`の追加引数で、行ラベルの横にチェックボックスを表示できます。
+チェックが外れると、その行に含まれるすべてのテキストボックスは非活性になります。
+
+```csharp
+new InputRow(
+    "真円　位置",
+    slots,
+    isVisible: true,
+    isCheckBoxVisible: true,
+    isChecked: true)
+```
+
+`真円入り矩形 + 矩形 + 台形`パターンも追加しています。
+上から順に、真円を内包した矩形、通常の矩形、台形を縦に配置します。
+真円の半径と位置、各図形の寸法、図形間隔を入力項目で変更できます。
 
 ## 入力項目・寸法線・ラベルの表示制御
 
