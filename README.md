@@ -90,6 +90,26 @@ new InputRow(
 上から順に、真円を内包した矩形、通常の矩形、台形を縦に配置します。
 真円の半径と位置、各図形の寸法、図形間隔を入力項目で変更できます。
 
+このパターンは、次のように部品を積み上げるだけで定義できます。
+
+```csharp
+return new VerticalCompositePatternBuilder("真円入り矩形 + 矩形 + 台形", 25)
+    .AddRectangleWithCircle("R1", "真円入り矩形", 180, 130, 30, 90, 65)
+    .AddRectangle("R2", "矩形", 150, 80)
+    .AddTrapezoid("T1", "台形", 110, 170, 90)
+    .Build();
+```
+
+`AddRectangle()`、`AddTrapezoid()`、`AddRectangleWithCircle()`は、それぞれの部品に必要な複数入力を1行表示する入力レイアウトも自動生成します。
+
+`AddRectangleWithCircle()`では、次の派生項目も表示します。
+
+- 円と矩形の左辺との距離
+- 円と矩形の上辺との距離
+
+これらは表示専用の非活性入力欄です。
+半径、中心X、中心Yが変更されると自動で再計算され、寸法線とラベルにも反映されます。
+
 ## 入力項目・寸法線・ラベルの表示制御
 
 `DimensionDisplay`で、入力項目、寸法線、ラベルを個別に表示または非表示にできます。

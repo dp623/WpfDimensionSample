@@ -30,6 +30,11 @@ namespace WpfDimensionSample.Models
             IsVisible = isVisible;
             IsCheckBoxVisible = isCheckBoxVisible;
             _isChecked = isChecked;
+
+            foreach (var slot in Slots)
+            {
+                slot.SetOwner(this);
+            }
         }
 
         public string Label { get; private set; }
@@ -48,6 +53,10 @@ namespace WpfDimensionSample.Models
                 if (SetProperty(ref _isChecked, value))
                 {
                     OnPropertyChanged(nameof(IsSlotsEnabled));
+                    foreach (var slot in Slots)
+                    {
+                        slot.NotifyEnabledChanged();
+                    }
                 }
             }
         }
@@ -61,6 +70,7 @@ namespace WpfDimensionSample.Models
     public sealed class InputSlot : ObservableObject
     {
         private bool _isChecked;
+        private InputRow _owner;
 
         public InputSlot(string prefix, DimensionParameter parameter, string suffix)
             : this(prefix, parameter, suffix, false, true)
@@ -105,7 +115,22 @@ namespace WpfDimensionSample.Models
 
         public bool IsTextBoxEnabled
         {
-            get { return !IsCheckBoxVisible || IsChecked; }
+            get
+            {
+                return (!IsCheckBoxVisible || IsChecked)
+                    && !Parameter.IsReadOnly
+                    && (_owner == null || _owner.IsSlotsEnabled);
+            }
+        }
+
+        internal void SetOwner(InputRow owner)
+        {
+            _owner = owner;
+        }
+
+        internal void NotifyEnabledChanged()
+        {
+            OnPropertyChanged(nameof(IsTextBoxEnabled));
         }
     }
 }

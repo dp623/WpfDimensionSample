@@ -9,7 +9,7 @@ namespace WpfDimensionSample.Models
             string name,
             IReadOnlyList<DimensionParameter> parameters,
             Func<IReadOnlyDictionary<string, double>, DrawingModel> buildDrawing)
-            : this(name, parameters, CreateDefaultInputRows(parameters), buildDrawing)
+            : this(name, parameters, CreateDefaultInputRows(parameters), null, buildDrawing)
         {
         }
 
@@ -18,10 +18,21 @@ namespace WpfDimensionSample.Models
             IReadOnlyList<DimensionParameter> parameters,
             IReadOnlyList<InputRow> inputRows,
             Func<IReadOnlyDictionary<string, double>, DrawingModel> buildDrawing)
+            : this(name, parameters, inputRows, null, buildDrawing)
+        {
+        }
+
+        public ShapePattern(
+            string name,
+            IReadOnlyList<DimensionParameter> parameters,
+            IReadOnlyList<InputRow> inputRows,
+            Action<IReadOnlyDictionary<string, double>> updateComputedParameters,
+            Func<IReadOnlyDictionary<string, double>, DrawingModel> buildDrawing)
         {
             Name = name;
             Parameters = parameters;
             InputRows = inputRows;
+            UpdateComputedParameters = updateComputedParameters;
             BuildDrawing = buildDrawing;
         }
 
@@ -32,6 +43,8 @@ namespace WpfDimensionSample.Models
         public IReadOnlyList<InputRow> InputRows { get; private set; }
 
         public Func<IReadOnlyDictionary<string, double>, DrawingModel> BuildDrawing { get; private set; }
+
+        public Action<IReadOnlyDictionary<string, double>> UpdateComputedParameters { get; private set; }
 
         private static IReadOnlyList<InputRow> CreateDefaultInputRows(
             IReadOnlyList<DimensionParameter> parameters)

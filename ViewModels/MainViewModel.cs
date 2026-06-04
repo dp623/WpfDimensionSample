@@ -11,6 +11,7 @@ namespace WpfDimensionSample.ViewModels
     {
         private ShapePattern _selectedPattern;
         private DrawingModel _drawing;
+        private bool _isRebuilding;
 
         public MainViewModel()
         {
@@ -72,6 +73,11 @@ namespace WpfDimensionSample.ViewModels
 
         private void ParameterOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (_isRebuilding)
+            {
+                return;
+            }
+
             if (e.PropertyName == nameof(DimensionParameter.NumericValue))
             {
                 RebuildDrawing();
@@ -86,8 +92,22 @@ namespace WpfDimensionSample.ViewModels
                 return;
             }
 
-            var values = SelectedPattern.Parameters.ToDictionary(x => x.Key, x => x.NumericValue);
-            Drawing = SelectedPattern.BuildDrawing(values);
+            _isRebuilding = true;
+            try
+            {
+                var values = SelectedPattern.Parameters.ToDictionary(x => x.Key, x => x.NumericValue);
+                if (SelectedPattern.UpdateComputedParameters != null)
+                {
+                    SelectedPattern.UpdateComputedParameters(values);
+                    values = SelectedPattern.Parameters.ToDictionary(x => x.Key, x => x.NumericValue);
+                }
+
+                Drawing = SelectedPattern.BuildDrawing(values);
+            }
+            finally
+            {
+                _isRebuilding = false;
+            }
         }
     }
 }

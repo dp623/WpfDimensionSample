@@ -71,8 +71,7 @@
                                                 <TextBox Width="54"
                                                          Margin="0,0,4,0"
                                                          Padding="5,3"
-                                                         IsEnabled="{Binding DataContext.IsSlotsEnabled,
-                                                                             RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                         IsEnabled="{Binding IsTextBoxEnabled}"
                                                          Text="{Binding Parameter.ValueText,
                                                                         UpdateSourceTrigger=PropertyChanged,
                                                                         ValidatesOnNotifyDataErrors=True}" />

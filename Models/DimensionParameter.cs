@@ -18,12 +18,14 @@ namespace WpfDimensionSample.Models
             string label,
             double initialValue,
             string unit = "mm",
-            bool isVisible = true)
+            bool isVisible = true,
+            bool isReadOnly = false)
         {
             Key = key;
             Label = label;
             Unit = unit;
             IsVisible = isVisible;
+            IsReadOnly = isReadOnly;
             _numericValue = initialValue;
             _valueText = initialValue.ToString(CultureInfo.CurrentCulture);
         }
@@ -35,6 +37,8 @@ namespace WpfDimensionSample.Models
         public string Unit { get; private set; }
 
         public bool IsVisible { get; private set; }
+
+        public bool IsReadOnly { get; private set; }
 
         public double NumericValue
         {
@@ -59,6 +63,18 @@ namespace WpfDimensionSample.Models
         public bool HasErrors { get { return _errors.Count > 0; } }
 
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+
+        public void SetComputedValue(double value)
+        {
+            _errors.Clear();
+            NumericValue = value;
+            SetProperty(
+                ref _valueText,
+                value.ToString(CultureInfo.CurrentCulture),
+                nameof(ValueText));
+            RaiseErrorsChanged();
+            OnPropertyChanged(nameof(HasErrors));
+        }
 
         public IEnumerable GetErrors(string propertyName)
         {
@@ -94,12 +110,17 @@ namespace WpfDimensionSample.Models
                 NumericValue = value;
             }
 
+            RaiseErrorsChanged();
+            OnPropertyChanged(nameof(HasErrors));
+        }
+
+        private void RaiseErrorsChanged()
+        {
             var handler = ErrorsChanged;
             if (handler != null)
             {
                 handler(this, new DataErrorsChangedEventArgs(nameof(ValueText)));
             }
-            OnPropertyChanged(nameof(HasErrors));
         }
     }
 }
