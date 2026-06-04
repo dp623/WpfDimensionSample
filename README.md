@@ -136,3 +136,32 @@ new DimensionDisplay(
     isLineVisible: true,
     isLabelVisible: false)
 ```
+
+## 入力行の並び順
+
+左側の入力行は `SortOrder` の昇順で表示されます。
+同じ `SortOrder` の場合は、定義した順序を維持します。
+
+1項目1行の標準レイアウトでは、`DimensionParameter` の `sortOrder` を指定します。
+
+```csharp
+new DimensionParameter(
+    key: "Width",
+    label: "幅",
+    initialValue: 180,
+    sortOrder: 20)
+```
+
+複数入力を1行にまとめる場合は、`InputRow` の `sortOrder` を指定します。
+
+```csharp
+new InputRow(
+    "真円　位置",
+    slots,
+    isVisible: true,
+    isCheckBoxVisible: true,
+    isChecked: true,
+    sortOrder: 30)
+```
+
+`VerticalCompositePatternBuilder`で生成される入力行には、部品の追加順に応じて自動で `SortOrder` が設定されます。

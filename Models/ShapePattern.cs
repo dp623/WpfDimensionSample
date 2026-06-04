@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace WpfDimensionSample.Models
 {
@@ -31,7 +32,7 @@ namespace WpfDimensionSample.Models
         {
             Name = name;
             Parameters = parameters;
-            InputRows = inputRows;
+            InputRows = SortInputRows(inputRows);
             UpdateComputedParameters = updateComputedParameters;
             BuildDrawing = buildDrawing;
         }
@@ -58,10 +59,23 @@ namespace WpfDimensionSample.Models
                     {
                         new InputSlot(string.Empty, parameter, parameter.Unit)
                     },
-                    parameter.IsVisible));
+                    parameter.IsVisible,
+                    false,
+                    true,
+                    parameter.SortOrder));
             }
 
             return rows;
+        }
+
+        private static IReadOnlyList<InputRow> SortInputRows(IReadOnlyList<InputRow> inputRows)
+        {
+            return inputRows
+                .Select((row, index) => new { Row = row, Index = index })
+                .OrderBy(x => x.Row.SortOrder)
+                .ThenBy(x => x.Index)
+                .Select(x => x.Row)
+                .ToList();
         }
     }
 }

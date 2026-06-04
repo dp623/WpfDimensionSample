@@ -9,12 +9,17 @@ namespace WpfDimensionSample.Models
         private bool _isChecked;
 
         public InputRow(string label, IReadOnlyList<InputSlot> slots)
-            : this(label, slots, slots.Any(x => x.IsVisible), false, true)
+            : this(label, slots, slots.Any(x => x.IsVisible), false, true, 0)
+        {
+        }
+
+        public InputRow(string label, IReadOnlyList<InputSlot> slots, int sortOrder)
+            : this(label, slots, slots.Any(x => x.IsVisible), false, true, sortOrder)
         {
         }
 
         public InputRow(string label, IReadOnlyList<InputSlot> slots, bool isVisible)
-            : this(label, slots, isVisible, false, true)
+            : this(label, slots, isVisible, false, true, 0)
         {
         }
 
@@ -24,11 +29,23 @@ namespace WpfDimensionSample.Models
             bool isVisible,
             bool isCheckBoxVisible,
             bool isChecked)
+            : this(label, slots, isVisible, isCheckBoxVisible, isChecked, 0)
+        {
+        }
+
+        public InputRow(
+            string label,
+            IReadOnlyList<InputSlot> slots,
+            bool isVisible,
+            bool isCheckBoxVisible,
+            bool isChecked,
+            int sortOrder)
         {
             Label = label;
             Slots = slots;
             IsVisible = isVisible;
             IsCheckBoxVisible = isCheckBoxVisible;
+            SortOrder = sortOrder;
             _isChecked = isChecked;
 
             foreach (var slot in Slots)
@@ -44,6 +61,8 @@ namespace WpfDimensionSample.Models
         public bool IsVisible { get; private set; }
 
         public bool IsCheckBoxVisible { get; private set; }
+
+        public int SortOrder { get; private set; }
 
         public bool IsChecked
         {

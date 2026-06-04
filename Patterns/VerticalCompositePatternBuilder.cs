@@ -48,7 +48,8 @@ namespace WpfDimensionSample.Patterns
                 initialWidth,
                 initialHeight,
                 widthDisplay,
-                heightDisplay));
+                heightDisplay,
+                NextPartSortOrder()));
             return this;
         }
 
@@ -88,7 +89,8 @@ namespace WpfDimensionSample.Patterns
                 initialHeight,
                 topWidthDisplay,
                 bottomWidthDisplay,
-                heightDisplay));
+                heightDisplay,
+                NextPartSortOrder()));
             return this;
         }
 
@@ -108,7 +110,8 @@ namespace WpfDimensionSample.Patterns
                 initialHeight,
                 initialCircleRadius,
                 initialCircleCenterX,
-                initialCircleCenterY));
+                initialCircleCenterY,
+                NextPartSortOrder()));
             return this;
         }
 
@@ -116,6 +119,11 @@ namespace WpfDimensionSample.Patterns
         {
             _gapDisplay = display;
             return this;
+        }
+
+        private int NextPartSortOrder()
+        {
+            return _parts.Count * 100;
         }
 
         public ShapePattern Build()
@@ -157,7 +165,10 @@ namespace WpfDimensionSample.Patterns
                     {
                         new InputSlot(string.Empty, gap, gap.Unit)
                     },
-                    gap.IsVisible));
+                    gap.IsVisible,
+                    false,
+                    true,
+                    _parts.Count * 100));
             }
 
             return new ShapePattern(
@@ -236,14 +247,16 @@ namespace WpfDimensionSample.Patterns
 
         private abstract class PartDefinition
         {
-            protected PartDefinition(string key, string label)
+            protected PartDefinition(string key, string label, int sortOrder)
             {
                 Key = key;
                 Label = label;
+                SortOrder = sortOrder;
             }
 
             protected string Key { get; private set; }
             protected string Label { get; private set; }
+            protected int SortOrder { get; private set; }
 
             public abstract void AddParameters(ICollection<DimensionParameter> parameters);
             public abstract double GetWidth(IReadOnlyDictionary<string, double> values);
@@ -298,8 +311,9 @@ namespace WpfDimensionSample.Patterns
                 double initialWidth,
                 double initialHeight,
                 DimensionDisplay widthDisplay,
-                DimensionDisplay heightDisplay)
-                : base(key, label)
+                DimensionDisplay heightDisplay,
+                int sortOrder)
+                : base(key, label, sortOrder)
             {
                 _initialWidth = initialWidth;
                 _initialHeight = initialHeight;
@@ -355,7 +369,8 @@ namespace WpfDimensionSample.Patterns
                     {
                         new InputSlot(string.Empty, width, "W x"),
                         new InputSlot(string.Empty, height, "H")
-                    }));
+                    },
+                    SortOrder));
             }
 
             public override void AddDimensions(
@@ -402,8 +417,9 @@ namespace WpfDimensionSample.Patterns
                 double initialHeight,
                 double initialCircleRadius,
                 double initialCircleCenterX,
-                double initialCircleCenterY)
-                : base(key, label)
+                double initialCircleCenterY,
+                int sortOrder)
+                : base(key, label, sortOrder)
             {
                 _initialWidth = initialWidth;
                 _initialHeight = initialHeight;
@@ -478,13 +494,15 @@ namespace WpfDimensionSample.Patterns
                     {
                         new InputSlot(string.Empty, parameters[ParameterKey("Width")], "W x"),
                         new InputSlot(string.Empty, parameters[ParameterKey("Height")], "H")
-                    }));
+                    },
+                    SortOrder));
                 rows.Add(new InputRow(
                     "真円　半径",
                     new List<InputSlot>
                     {
                         new InputSlot(string.Empty, parameters[ParameterKey("CircleRadius")], string.Empty)
-                    }));
+                    },
+                    SortOrder + 10));
                 rows.Add(new InputRow(
                     "真円　位置",
                     new List<InputSlot>
@@ -494,14 +512,16 @@ namespace WpfDimensionSample.Patterns
                     },
                     true,
                     true,
-                    true));
+                    true,
+                    SortOrder + 20));
                 rows.Add(new InputRow(
                     "真円　距離",
                     new List<InputSlot>
                     {
                         new InputSlot("左", parameters[ParameterKey("CircleLeftDistance")], "x"),
                         new InputSlot("上", parameters[ParameterKey("CircleTopDistance")], string.Empty)
-                    }));
+                    },
+                    SortOrder + 30));
             }
 
             public override void UpdateComputedParameters(
@@ -604,8 +624,9 @@ namespace WpfDimensionSample.Patterns
                 double initialHeight,
                 DimensionDisplay topWidthDisplay,
                 DimensionDisplay bottomWidthDisplay,
-                DimensionDisplay heightDisplay)
-                : base(key, label)
+                DimensionDisplay heightDisplay,
+                int sortOrder)
+                : base(key, label, sortOrder)
             {
                 _initialTopWidth = initialTopWidth;
                 _initialBottomWidth = initialBottomWidth;
@@ -681,7 +702,8 @@ namespace WpfDimensionSample.Patterns
                         new InputSlot("上", parameters[ParameterKey("TopWidth")], "x"),
                         new InputSlot("下", parameters[ParameterKey("BottomWidth")], "x"),
                         new InputSlot("H", parameters[ParameterKey("Height")], string.Empty)
-                    }));
+                    },
+                    SortOrder));
             }
 
             public override void AddDimensions(

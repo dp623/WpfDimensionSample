@@ -19,13 +19,15 @@ namespace WpfDimensionSample.Models
             double initialValue,
             string unit = "mm",
             bool isVisible = true,
-            bool isReadOnly = false)
+            bool isReadOnly = false,
+            int sortOrder = 0)
         {
             Key = key;
             Label = label;
             Unit = unit;
             IsVisible = isVisible;
             IsReadOnly = isReadOnly;
+            SortOrder = sortOrder;
             _numericValue = initialValue;
             _valueText = initialValue.ToString(CultureInfo.CurrentCulture);
         }
@@ -39,6 +41,8 @@ namespace WpfDimensionSample.Models
         public bool IsVisible { get; private set; }
 
         public bool IsReadOnly { get; private set; }
+
+        public int SortOrder { get; private set; }
 
         public double NumericValue
         {
