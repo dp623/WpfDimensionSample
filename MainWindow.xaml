@@ -4,15 +4,15 @@
         xmlns:controls="clr-namespace:WpfDimensionSample.Controls"
         Title="寸法連携サンプル"
         Width="1000"
-        Height="620"
-        MinWidth="760"
-        MinHeight="460">
+        Height="600"
+        MinWidth="700"
+        MinHeight="500">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
     <Grid Margin="20">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="280" />
+            <ColumnDefinition Width="300" />
             <ColumnDefinition Width="20" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
@@ -35,28 +35,45 @@
 
                 <Separator Margin="0,18,0,12" />
 
-                <ItemsControl ItemsSource="{Binding SelectedPattern.Parameters}">
+                <ItemsControl ItemsSource="{Binding SelectedPattern.InputRows}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid Margin="0,0,0,12"
                                   Visibility="{Binding IsVisible,
                                                        Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="72" />
+                                    <ColumnDefinition Width="86" />
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="34" />
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock VerticalAlignment="Center" Text="{Binding Label}" />
-                                <TextBox Grid.Column="1"
-                                         Margin="0,0,6,0"
-                                         Padding="5,3"
-                                         Text="{Binding ValueText,
-                                                        UpdateSourceTrigger=PropertyChanged,
-                                                        ValidatesOnNotifyDataErrors=True}" />
-                                <TextBlock Grid.Column="2"
-                                           VerticalAlignment="Center"
-                                           Text="{Binding Unit}" />
+                                <ItemsControl Grid.Column="1" ItemsSource="{Binding Slots}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal"
+                                                        Visibility="{Binding IsVisible,
+                                                                             Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <TextBlock VerticalAlignment="Center"
+                                                           Margin="0,0,4,0"
+                                                           Text="{Binding Prefix}" />
+                                                <TextBox Width="54"
+                                                         Margin="0,0,4,0"
+                                                         Padding="5,3"
+                                                         Text="{Binding Parameter.ValueText,
+                                                                        UpdateSourceTrigger=PropertyChanged,
+                                                                        ValidatesOnNotifyDataErrors=True}" />
+                                                <TextBlock VerticalAlignment="Center"
+                                                           Margin="0,0,6,0"
+                                                           Text="{Binding Suffix}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

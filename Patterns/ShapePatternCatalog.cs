@@ -37,15 +37,40 @@ namespace WpfDimensionSample.Patterns
 
         private static ShapePattern CreateRectangleWithCirclePattern()
         {
+            var parameters = new List<DimensionParameter>
+            {
+                new DimensionParameter("RectangleWidth", "四角形 幅", 180),
+                new DimensionParameter("RectangleHeight", "四角形 高さ", 130),
+                new DimensionParameter("CircleRadius", "真円 半径", 30),
+                new DimensionParameter("CircleCenterX", "真円 中心X", 90),
+                new DimensionParameter("CircleCenterY", "真円 中心Y", 65)
+            };
+
             return new ShapePattern(
                 "四角形 + 真円",
-                new List<DimensionParameter>
+                parameters,
+                new List<InputRow>
                 {
-                    new DimensionParameter("RectangleWidth", "四角形 幅", 180),
-                    new DimensionParameter("RectangleHeight", "四角形 高さ", 130),
-                    new DimensionParameter("CircleRadius", "真円 半径", 30),
-                    new DimensionParameter("CircleCenterX", "真円 中心X", 90),
-                    new DimensionParameter("CircleCenterY", "真円 中心Y", 65)
+                    new InputRow(
+                        "四角形",
+                        new List<InputSlot>
+                        {
+                            new InputSlot(string.Empty, parameters[0], "W x"),
+                            new InputSlot(string.Empty, parameters[1], "H")
+                        }),
+                    new InputRow(
+                        "真円　半径",
+                        new List<InputSlot>
+                        {
+                            new InputSlot(string.Empty, parameters[2], string.Empty)
+                        }),
+                    new InputRow(
+                        "真円　位置",
+                        new List<InputSlot>
+                        {
+                            new InputSlot("X", parameters[3], "x"),
+                            new InputSlot("Y", parameters[4], string.Empty)
+                        })
                 },
                 values =>
                 {
