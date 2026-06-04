@@ -7,6 +7,8 @@ using WpfDimensionSample.Infrastructure;
 
 namespace WpfDimensionSample.Models
 {
+    // TextBoxに表示する1つの寸法値を表します。
+    // ユーザー入力値だけでなく、計算で求める表示専用値にも使います。
     public sealed class DimensionParameter : ObservableObject, INotifyDataErrorInfo
     {
         private readonly List<string> _errors = new List<string>();
@@ -68,6 +70,8 @@ namespace WpfDimensionSample.Models
 
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 
+        // 関連入力から再計算される値を、入力検証を通さずに反映します。
+        // 例: 円の左距離 = 中心X - 半径。
         public void SetComputedValue(double value)
         {
             _errors.Clear();
@@ -111,6 +115,8 @@ namespace WpfDimensionSample.Models
             }
             else
             {
+                // 入力が有効なときだけNumericValueを更新します。
+                // 無効入力中は直前の有効値で図形を描き続けます。
                 NumericValue = value;
             }
 

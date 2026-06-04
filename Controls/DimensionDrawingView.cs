@@ -8,6 +8,8 @@ using WpfDimensionSample.Models;
 
 namespace WpfDimensionSample.Controls
 {
+    // DrawingModelを実際のWPF描画に変換するビューです。
+    // 実寸値はそのまま保持し、表示領域に収まるようここでスケール変換します。
     public sealed class DimensionDrawingView : FrameworkElement
     {
         private const double OuterMargin = 92;
@@ -45,10 +47,12 @@ namespace WpfDimensionSample.Controls
             var bounds = GetBounds(
                 Drawing.Shapes.SelectMany(x => x),
                 Drawing.Circles);
+            // 図形全体が表示領域に収まる縮尺を求めます。
             var scale = Math.Min(
                 Math.Max(1, ActualWidth - OuterMargin * 2) / Math.Max(1, bounds.Width),
                 Math.Max(1, ActualHeight - OuterMargin * 2) / Math.Max(1, bounds.Height));
 
+            // モデル座標を画面座標へ変換します。
             Func<Point, Point> map = point => new Point(
                 OuterMargin + (point.X - bounds.Left) * scale,
                 OuterMargin + (point.Y - bounds.Top) * scale);
@@ -108,19 +112,19 @@ namespace WpfDimensionSample.Controls
             var dimensionFrom = from + offset;
             var dimensionTo = to + offset;
 
-        if (annotation.IsLineVisible)
-        {
-            drawingContext.DrawLine(DimensionPen, from, dimensionFrom + extension);
-            drawingContext.DrawLine(DimensionPen, to, dimensionTo + extension);
-            drawingContext.DrawLine(DimensionPen, dimensionFrom, dimensionTo);
-            DrawArrow(drawingContext, dimensionFrom, dimensionTo);
-            DrawArrow(drawingContext, dimensionTo, dimensionFrom);
-        }
+            if (annotation.IsLineVisible)
+            {
+                drawingContext.DrawLine(DimensionPen, from, dimensionFrom + extension);
+                drawingContext.DrawLine(DimensionPen, to, dimensionTo + extension);
+                drawingContext.DrawLine(DimensionPen, dimensionFrom, dimensionTo);
+                DrawArrow(drawingContext, dimensionFrom, dimensionTo);
+                DrawArrow(drawingContext, dimensionTo, dimensionFrom);
+            }
 
-        if (annotation.IsLabelVisible)
-        {
-            DrawLabel(drawingContext, dimensionFrom, dimensionTo, annotation.Label);
-        }
+            if (annotation.IsLabelVisible)
+            {
+                DrawLabel(drawingContext, dimensionFrom, dimensionTo, annotation.Label);
+            }
         }
 
         private static void DrawArrow(DrawingContext drawingContext, Point tip, Point opposite)
@@ -168,6 +172,7 @@ namespace WpfDimensionSample.Controls
             IReadOnlyList<CircleShape> circles)
         {
             var points = shapePoints.ToList();
+            // 円も含めて外接矩形を作り、スケール計算からはみ出さないようにします。
             foreach (var circle in circles)
             {
                 points.Add(new Point(circle.Center.X - circle.Radius, circle.Center.Y - circle.Radius));

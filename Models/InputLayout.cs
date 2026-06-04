@@ -4,6 +4,8 @@ using WpfDimensionSample.Infrastructure;
 
 namespace WpfDimensionSample.Models
 {
+    // 左側パネルの1行分の入力レイアウトです。
+    // 複数のInputSlotを持てるため、"幅 [ ] W x [ ] H"のような行を作れます。
     public sealed class InputRow : ObservableObject
     {
         private bool _isChecked;
@@ -48,6 +50,7 @@ namespace WpfDimensionSample.Models
             SortOrder = sortOrder;
             _isChecked = isChecked;
 
+            // 行単位のチェックボックスで、行内の複数TextBoxをまとめて有効/無効にします。
             foreach (var slot in Slots)
             {
                 slot.SetOwner(this);
@@ -136,6 +139,7 @@ namespace WpfDimensionSample.Models
         {
             get
             {
+                // スロット自身、行チェック、表示専用フラグの3条件で編集可否を決めます。
                 return (!IsCheckBoxVisible || IsChecked)
                     && !Parameter.IsReadOnly
                     && (_owner == null || _owner.IsSlotsEnabled);

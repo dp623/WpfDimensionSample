@@ -4,6 +4,8 @@ using System.Linq;
 
 namespace WpfDimensionSample.Models
 {
+    // コンボボックスで選択される1つの図形パターンです。
+    // 入力値、左側の入力レイアウト、描画モデル生成処理をまとめて保持します。
     public sealed class ShapePattern
     {
         public ShapePattern(
@@ -45,6 +47,8 @@ namespace WpfDimensionSample.Models
 
         public Func<IReadOnlyDictionary<string, double>, DrawingModel> BuildDrawing { get; private set; }
 
+        // 派生項目を再計算する任意フックです。
+        // BuildDrawing前にMainViewModelから呼び出されます。
         public Action<IReadOnlyDictionary<string, double>> UpdateComputedParameters { get; private set; }
 
         private static IReadOnlyList<InputRow> CreateDefaultInputRows(
@@ -70,6 +74,7 @@ namespace WpfDimensionSample.Models
 
         private static IReadOnlyList<InputRow> SortInputRows(IReadOnlyList<InputRow> inputRows)
         {
+            // 同じSortOrderの行は定義順を保ちます。
             return inputRows
                 .Select((row, index) => new { Row = row, Index = index })
                 .OrderBy(x => x.Row.SortOrder)

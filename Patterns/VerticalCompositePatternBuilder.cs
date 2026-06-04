@@ -6,6 +6,8 @@ using WpfDimensionSample.Models;
 
 namespace WpfDimensionSample.Patterns
 {
+    // 複数の図形部品を上から下へ積むパターンを生成します。
+    // カタログ側はAddRectangle/AddTrapezoid/AddRectangleWithCircleを並べるだけで済ませます。
     public sealed class VerticalCompositePatternBuilder
     {
         private readonly string _name;
@@ -123,6 +125,7 @@ namespace WpfDimensionSample.Patterns
 
         private int NextPartSortOrder()
         {
+            // 100刻みにしておくと、部品内の派生行を+10/+20で挿入できます。
             return _parts.Count * 100;
         }
 
@@ -153,6 +156,8 @@ namespace WpfDimensionSample.Patterns
             var inputRows = new List<InputRow>();
             foreach (var part in _parts)
             {
+                // 入力行は各部品自身が生成します。
+                // 例: 真円入り矩形は、矩形寸法/半径/位置/距離の複数行を作ります。
                 part.AddInputRows(inputRows, parameterMap);
             }
 
@@ -199,6 +204,7 @@ namespace WpfDimensionSample.Patterns
                 var part = _parts[index];
                 var width = part.GetWidth(values);
                 var height = part.GetHeight(values);
+                // 縦積み時は各部品を最大幅に対して中央揃えします。
                 var left = (totalWidth - width) / 2;
 
                 shapes.Add(part.CreatePoints(values, left, top));
@@ -233,6 +239,7 @@ namespace WpfDimensionSample.Patterns
         {
             if (!display.IsLineVisible && !display.IsLabelVisible)
             {
+                // 寸法線もラベルも不要な場合は、描画モデル自体へ追加しません。
                 return;
             }
 
@@ -258,6 +265,8 @@ namespace WpfDimensionSample.Patterns
             protected string Label { get; private set; }
             protected int SortOrder { get; private set; }
 
+            // 各部品は「入力値」「入力行」「図形」「寸法線」をまとめて生成します。
+            // これにより、カタログ側のハードコード量を抑えます。
             public abstract void AddParameters(ICollection<DimensionParameter> parameters);
             public abstract double GetWidth(IReadOnlyDictionary<string, double> values);
             public abstract double GetHeight(IReadOnlyDictionary<string, double> values);
@@ -532,6 +541,7 @@ namespace WpfDimensionSample.Patterns
                 var centerX = values[ParameterKey("CircleCenterX")];
                 var centerY = values[ParameterKey("CircleCenterY")];
 
+                // 円外周と矩形辺との距離は、中心位置と半径から求める表示専用値です。
                 parameters[ParameterKey("CircleLeftDistance")].SetComputedValue(centerX - radius);
                 parameters[ParameterKey("CircleTopDistance")].SetComputedValue(centerY - radius);
             }

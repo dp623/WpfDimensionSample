@@ -7,6 +7,8 @@ using WpfDimensionSample.Patterns;
 
 namespace WpfDimensionSample.ViewModels
 {
+    // 画面全体の状態管理です。
+    // 図形定義そのものはShapePatternCatalog/Builder側へ逃がし、ここでは選択と再描画だけを担当します。
     public sealed class MainViewModel : ObservableObject
     {
         private ShapePattern _selectedPattern;
@@ -98,6 +100,7 @@ namespace WpfDimensionSample.ViewModels
                 var values = SelectedPattern.Parameters.ToDictionary(x => x.Key, x => x.NumericValue);
                 if (SelectedPattern.UpdateComputedParameters != null)
                 {
+                    // 派生項目を更新したあと、最新の値で描画モデルを作り直します。
                     SelectedPattern.UpdateComputedParameters(values);
                     values = SelectedPattern.Parameters.ToDictionary(x => x.Key, x => x.NumericValue);
                 }

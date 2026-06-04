@@ -4,6 +4,8 @@ using System.Windows;
 
 namespace WpfDimensionSample.Models
 {
+    // 図形上に表示する寸法線とラベルの情報です。
+    // OffsetDirectionで、寸法線を図形からどちら側へ逃がすかを指定します。
     public sealed class DimensionAnnotation
     {
         public DimensionAnnotation(
@@ -64,6 +66,8 @@ namespace WpfDimensionSample.Models
         public IReadOnlyList<DimensionAnnotation> Dimensions { get; private set; }
     }
 
+    // 真円はポリゴンではなく中心点と半径で保持します。
+    // 表示時はDimensionDrawingView側で同じスケールを掛けて描画します。
     public sealed class CircleShape
     {
         public CircleShape(Point center, double radius)
